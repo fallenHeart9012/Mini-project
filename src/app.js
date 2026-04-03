@@ -19,6 +19,10 @@ const throttle = new ThrottleMiddleware(redis, mongoose.connection);
 
 // Global JSON parsing
 app.use(express.json());
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url} - ${new Date().toLocaleTimeString()}`);
+    next();
+});
 
 // Tier-based throttle configurations
 const throttleConfigs = {
