@@ -33,6 +33,6 @@ const CapacityMetricsSchema = new mongoose.Schema({
         suggested_rate: Number,
         confidence: Number
     }]
-});
+} , { timestamps: true });
 
 module.exports = mongoose.model('CapacityMetrics', CapacityMetricsSchema);
