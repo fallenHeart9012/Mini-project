@@ -5,23 +5,32 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <title>Throttling Sentinel - Dashboard</title>
 </head>
 
 <body>
+    <div id="background-animation">
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+    </div>
+    
     <div id="app">
         <div id="dashboard-content">
-            <header class="glass-pane">
+            <header>
                 <div class="logo-group">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <h1>THROTTLING SENTINEL</h1>
-                        <button id="btn-logout" class="btn-ghost" style="width: auto;">LOGOUT</button>
+                    <div class="logo-row">
+                        <div class="logo-orb small-orb"></div>
+                        <h1>SENTINEL</h1>
+                        <div class="status-badge-inline">
+                            <div class="pulse"></div>
+                            <span id="system-status-text">OPERATIONAL</span>
+                        </div>
                     </div>
-                    <p class="subtitle">Intelligent Capacity & Rate Limit Monitoring</p>
                 </div>
-                <div class="system-badge">
-                    <div class="pulse"></div>
-                    <span id="system-status-text">SYSTEM OPERATIONAL</span>
+                <div class="header-actions">
+                    <button id="btn-logout" class="btn-ghost-small"><i class='bx bx-log-out'></i> LOGOUT</button>
                 </div>
             </header>
 
@@ -30,23 +39,16 @@
                 <section class="col-span-12 dashboard-grid">
                     <div class="col-span-3 card glass-pane">
                         <div class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                            </svg>
+                            <i class='bx bxs-pie-chart-alt-2'></i>
                             AVAILABLE CAPACITY
                         </div>
                         <div class="metric-value"><span id="metric-capacity">--</span></div>
-                        <div class="metric-unit">REQUESTS / SECOND (SYS MAX)</div>
+                        <div class="metric-unit">REQUESTS / SECOND</div>
                     </div>
 
                     <div class="col-span-3 card glass-pane">
                         <div class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                            </svg>
+                            <i class='bx bxs-bolt-circle'></i>
                             SYSTEM LOAD
                         </div>
                         <div class="metric-value"><span id="metric-load">--</span><span class="metric-unit">%</span>
@@ -58,11 +60,7 @@
 
                     <div class="col-span-3 card glass-pane">
                         <div class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <circle cx="12" cy="12" r="10" />
-                                <path d="M12 6v6l4 2" />
-                            </svg>
+                            <i class='bx bxs-time-five'></i>
                             NEXT RESET
                         </div>
                         <div class="metric-value"><span id="metric-reset">--</span><span class="metric-unit">s</span>
@@ -72,13 +70,7 @@
 
                     <div class="col-span-3 card glass-pane">
                         <div class="card-title">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                                <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-                                <line x1="12" y1="22.08" x2="12" y2="12" />
-                            </svg>
+                            <i class='bx bxs-layer'></i>
                             BUCKET STATUS
                         </div>
                         <div class="metric-value"><span id="metric-tokens">--</span></div>
@@ -146,6 +138,19 @@
                             <span>Waiting for API traffic telemetry...</span>
                         </div>
                     </div>
+                </section>
+
+                <!-- Login History Link -->
+                <section class="col-span-12 card glass-pane" style="margin-top: 1rem; padding: 1.25rem 2rem;">
+                    <a href="/history.html" style="display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: inherit;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <i class='bx bxs-user-detail' style="font-size: 1.25rem; color: var(--secondary);"></i>
+                            <span style="font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">LOGIN AUDIT TRAIL</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--primary); font-size: 0.8rem; font-weight: 600;">
+                            VIEW FULL HISTORY <i class='bx bx-right-arrow-alt' style="font-size: 1.2rem;"></i>
+                        </div>
+                    </a>
                 </section>
             </main>
         </div>

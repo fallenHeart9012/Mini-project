@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <title>Throttling Sentinel - Login Audit Trail</title>
+</head>
+
+<body>
+    <div id="background-animation">
+        <div class="bg-shape shape-1"></div>
+        <div class="bg-shape shape-2"></div>
+        <div class="bg-shape shape-3"></div>
+    </div>
+
+    <div id="app">
+        <div id="history-content">
+            <header>
+                <div class="logo-group">
+                    <div class="logo-row">
+                        <div class="logo-orb small-orb"></div>
+                        <h1>SENTINEL</h1>
+                        <div class="status-badge-inline">
+                            <div class="pulse"></div>
+                            <span>AUDIT TRAIL</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="/dashboard.html" class="btn-ghost-small" style="text-decoration: none; color: inherit;">
+                        <i class='bx bx-arrow-back'></i> DASHBOARD
+                    </a>
+                </div>
+            </header>
+
+            <main class="dashboard-grid">
+                <!-- Stats Cards -->
+                <section class="col-span-12 dashboard-grid">
+                    <div class="col-span-4 card glass-pane">
+                        <div class="card-title">
+                            <i class='bx bxs-check-circle' style="color: var(--success)"></i>
+                            TOTAL SUCCESSFUL
+                        </div>
+                        <div class="metric-value"><span id="stat-success">0</span></div>
+                    </div>
+                    <div class="col-span-4 card glass-pane">
+                        <div class="card-title">
+                            <i class='bx bxs-x-circle' style="color: var(--error)"></i>
+                            TOTAL FAILED
+                        </div>
+                        <div class="metric-value"><span id="stat-failed">0</span></div>
+                    </div>
+                    <div class="col-span-4 card glass-pane">
+                        <div class="card-title">
+                            <i class='bx bxs-user-account' style="color: var(--secondary)"></i>
+                            UNIQUE USERS
+                        </div>
+                        <div class="metric-value"><span id="stat-users">0</span></div>
+                    </div>
+                </section>
+
+                <!-- Audit Trail Table -->
+                <section class="col-span-12 card glass-pane">
+                    <div class="card-title">
+                        <i class='bx bxs-user-detail'></i>
+                        LOGIN AUDIT TRAIL
+                        <div class="filter-group-inline" style="margin-left: auto; display: flex; gap: 0.5rem; align-items: center;">
+                            <select id="history-filter-status" class="filter-select">
+                                <option value="ALL">ALL ATTEMPTS</option>
+                                <option value="SUCCESS">SUCCESS ONLY</option>
+                                <option value="FAILED">FAILED ONLY</option>
+                            </select>
+                            <input type="text" id="history-search-user" placeholder="Search user..."
+                                style="padding: 6px 14px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; font-size: 0.8rem;">
+                        </div>
+                    </div>
+                    <div class="history-table-container">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>USERNAME</th>
+                                    <th>EMAIL</th>
+                                    <th>TIME</th>
+                                    <th>IP ADDRESS</th>
+                                    <th>STATUS</th>
+                                    <th>ATTEMPTS</th>
+                                    <th>REASON / DETAILS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-table-body">
+                                <!-- Loaded via JS -->
+                            </tbody>
+                        </table>
+                        <div id="history-empty" style="text-align: center; padding: 3rem; color: var(--text-muted); display: none;">
+                            <i class='bx bxs-ghost' style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p style="margin-top: 1rem;">No login attempts recorded yet.</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    <script type="module" src="/src/history.js"></script>
+</body>
+
+</html>

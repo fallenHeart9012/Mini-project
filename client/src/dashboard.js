@@ -21,7 +21,7 @@ const elements = {
 };
 
 // State
-let lastSystemLoad = 0;
+let pollInterval = null;
 
 // Initialize
 function init() {
@@ -32,8 +32,10 @@ function init() {
 
     setupEventListeners();
 
-    // Start polling
-    setInterval(pollSystemHealth, 3000);
+    // Start ONE polling interval — never create multiple
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = setInterval(pollSystemHealth, 1000);
+    
     pollSystemHealth();
 }
 
@@ -56,17 +58,20 @@ function setupEventListeners() {
 
 async function pollSystemHealth() {
     try {
-        const response = await fetch(`${API_BASE}/health`);
+        const response = await fetch(`${API_BASE}/metrics`);
         const data = await response.json();
 
-        const cpu = data.capacity?.systemLoad?.cpu_percent || 0;
-        const available = data.capacity?.availableCapacity || 0;
+        const { availableCapacity, bucketStatus, nextReset, systemLoad } = data;
 
-        elements.metricLoad.textContent = cpu;
-        elements.loadProgress.style.width = `${cpu}%`;
-        elements.metricCapacity.textContent = Math.floor(available);
+        // STRICT: Always render exactly what the backend sends — no local state caching
+        elements.metricCapacity.textContent = availableCapacity;
+        elements.metricTokens.textContent = bucketStatus;
+        elements.metricReset.textContent = `${nextReset}s`;
+        elements.metricLoad.textContent = systemLoad;
+        elements.loadProgress.style.width = `${systemLoad}%`;
 
-        if (cpu > 80) {
+        // Status color — only depends on systemLoad value
+        if (systemLoad > 80) {
             elements.loadProgress.style.background = 'var(--error)';
             elements.systemStatus.textContent = 'HIGH LOAD DETECTED';
             elements.systemStatus.parentElement.style.color = 'var(--error)';
@@ -88,28 +93,41 @@ async function fireRequest() {
     const cost = parseInt(elements.apiComplexity.value);
     const startTime = Date.now();
 
+    // Determine type from endpoint
+    const type = endpoint.includes('status') ? 'low' : 
+                 endpoint.includes('orders') ? 'medium' : 
+                 endpoint.includes('heavy-task') ? 'critical' : 'low';
+
+    // Determine method from endpoint
+    const isPost = endpoint.includes('orders') || endpoint.includes('heavy-task');
+    const options = {
+        method: isPost ? 'POST' : 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': key
+        }
+    };
+
     try {
-        const options = {
-            method: endpoint.includes('POST') ? 'POST' : 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': key
-            }
-        };
+        let fetchUrl = `${API_BASE}${endpoint}`;
 
         if (options.method === 'POST') {
-            options.body = JSON.stringify({ complexity: cost });
+            options.body = JSON.stringify({ type: type, complexity: cost });
+        } else {
+            const url = new URL(fetchUrl);
+            url.searchParams.append('type', type);
+            fetchUrl = url.toString();
         }
 
-        const response = await fetch(`${API_BASE}${endpoint}`, options);
+        const response = await fetch(fetchUrl, options);
         const data = await response.json();
 
-        const limit = response.headers.get('X-RateLimit-Limit');
-        const remaining = response.headers.get('X-RateLimit-Remaining');
-        const reset = response.headers.get('X-RateLimit-Reset');
+        // Extract tokens_remaining from JSON body (fallback to current state if missing)
+        const remaining = data.tokens_remaining !== undefined ? data.tokens_remaining : '--';
 
-        updateRateLimitUI(remaining, limit, reset);
+        // No longer need manual UI update here, pollSystemHealth handles synchronization
         addLogEntry(options.method, endpoint, response.status, Date.now() - startTime, remaining);
+        pollSystemHealth(); // Instant resync after request
 
     } catch (error) {
         addLogEntry('ERROR', endpoint, 'OFFLINE', 0, '--');
@@ -129,18 +147,6 @@ async function fireBurst() {
     await Promise.all(promises);
     elements.btnBurst.disabled = false;
     elements.btnBurst.textContent = '⚡ BURST MODE';
-}
-
-function updateRateLimitUI(remaining, limit, reset) {
-    if (!remaining) return;
-    elements.metricTokens.textContent = Math.floor(remaining);
-
-    if (reset) {
-        const resetTime = parseInt(reset);
-        const now = Math.floor(Date.now() / 1000);
-        const wait = Math.max(0, resetTime - now);
-        elements.metricReset.textContent = wait;
-    }
 }
 
 function addLogEntry(method, path, status, duration, remaining) {
